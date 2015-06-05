@@ -13,6 +13,7 @@ module InfluxDB
                   :database,
                   :time_precision,
                   :use_ssl,
+                  :verify_mode,
                   :stopped,
                   :auth_method
 
@@ -50,6 +51,7 @@ module InfluxDB
       @password = opts[:password] || "root"
       @auth_method = %w{params basic_auth}.include?(opts[:auth_method]) ? opts[:auth_method] : "params"
       @use_ssl = opts[:use_ssl] || false
+      @verify_mode = opts[:verify_mode] || OpenSSL::SSL::VERIFY_PEER
       @time_precision = opts[:time_precision] || "s"
       @initial_delay = opts[:initial_delay] || 0.01
       @max_delay = opts[:max_delay] || 30
@@ -278,6 +280,7 @@ module InfluxDB
         http.open_timeout = @open_timeout
         http.read_timeout = @read_timeout
         http.use_ssl = @use_ssl
+        http.verify_mode = @verify_mode
         block.call(http)
 
       rescue Timeout::Error, *InfluxDB::NET_HTTP_EXCEPTIONS => e
